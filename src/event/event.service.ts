@@ -19,7 +19,7 @@ export class EventService{
         return events;
     }
 
-    async getEvent(id:number) {
+    async getEvent(id:number):Promise<IEvent> {
         const event = await this.eventRepository.findOneBy({id})
         if(!event)
             throw new BadRequestException("Invalid id")
@@ -35,7 +35,7 @@ export class EventService{
         return await this.eventRepository.save({...event,...payload});
     }
 
-    async deleteEvent(id:number) {
+    async deleteEvent(id:number):Promise<IEvent> {
         const event = await this.getEvent(id);
         await this.eventRepository.delete(event);
         return event;
