@@ -30,11 +30,11 @@ export class EventService{
         return event;
     }
 
-    async createEvent(payload:CreateEventDTO) {
+    async createEvent(payload:CreateEventDTO):Promise<IEvent>  {
         return await this.eventRepository.save({...payload});
     }
 
-    async updateEvent(id:number, payload:UpdateEventDTO) {
+    async updateEvent(id:number, payload:UpdateEventDTO):Promise<IEvent>  {
         const event = await this.getEvent(id);
         return await this.eventRepository.save({...event,...payload});
     }
