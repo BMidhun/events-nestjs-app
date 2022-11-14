@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { NotFoundException, Injectable } from "@nestjs/common";
 import {Repository, ILike,} from "typeorm"
 import {InjectRepository} from "@nestjs/typeorm"
 import { EventEntity } from "./entity";
@@ -26,7 +26,7 @@ export class EventService{
     async getEvent(id:number):Promise<IEvent> {
         const event = await this.eventRepository.findOneBy({id})
         if(!event)
-            throw new BadRequestException("Invalid id")
+            throw new NotFoundException("Invalid id")
         return event;
     }
 
