@@ -1,6 +1,6 @@
 import {PrimaryGeneratedColumn, Entity, Column} from "typeorm"
 
-@Entity()
+@Entity("events")
 export class EventEntity {
 
     @PrimaryGeneratedColumn({type:"int"})

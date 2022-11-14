@@ -12,7 +12,7 @@ export class CreateEventDTO {
     description:string;
 
     @IsNotEmpty()
-    @Transform(() => Date)
+    @Transform(({value}) => new Date(value))
     @IsDate()
     when: Date;
 
