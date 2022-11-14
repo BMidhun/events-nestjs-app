@@ -1,4 +1,4 @@
-import {Transform} from "class-transformer";
+import {Type} from "class-transformer";
 import {IsNotEmpty, IsString,IsDate} from "class-validator";
 
 export class CreateEventDTO {
@@ -12,7 +12,7 @@ export class CreateEventDTO {
     description:string;
 
     @IsNotEmpty()
-    @Transform(({value}) => new Date(value))
+    @Type(() => Date)
     @IsDate()
     when: Date;
 

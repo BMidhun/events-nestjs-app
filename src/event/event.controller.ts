@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, ValidationPipe } from "@nestjs/common";
-import { CreateEventDTO, UpdateEventDTO } from "./dto";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, ValidationPipe, Query } from "@nestjs/common";
+import { CreateEventDTO, GetAllEventsDTO, UpdateEventDTO } from "./dto";
 import { EventService } from "./event.service";
 
 @Controller("event")
@@ -10,8 +10,8 @@ export class EventController {
     // Most specific route should come before the least specific to avoid conflict. Both route event/all and event/:id looks the same.
     
     @Get("all")
-    async getAllEvents() {
-        return await this.eventService.getAllEvents();
+    async getAllEvents(@Query(new ValidationPipe({whitelist:true,transform:true})) query:GetAllEventsDTO) {
+        return await this.eventService.getAllEvents(query);
     }
 
     @Get(":id")

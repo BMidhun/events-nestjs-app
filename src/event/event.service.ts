@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import {Repository} from "typeorm"
+import {Repository, ILike,} from "typeorm"
 import {InjectRepository} from "@nestjs/typeorm"
 import { EventEntity } from "./entity";
 import { IEvent } from "./interface";
-import { CreateEventDTO, UpdateEventDTO } from "./dto";
+import { CreateEventDTO, GetAllEventsDTO, UpdateEventDTO } from "./dto";
 @Injectable()
 export class EventService{
 
@@ -14,8 +14,12 @@ export class EventService{
 
     }
 
-    async getAllEvents():Promise<IEvent[]> {
-        const events = await this.eventRepository.find();
+    async getAllEvents(query:GetAllEventsDTO):Promise<IEvent[]> {
+       
+        const {limit,skip,search,orderBy} = query
+        
+        const events = await this.eventRepository.find({take:limit, skip, order:{createdAt:orderBy}, where:[{name:ILike(`%${search}%`)}, {description:ILike(`%${search}%`)}] });
+
         return events;
     }
 
