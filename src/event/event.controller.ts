@@ -1,9 +1,11 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, ValidationPipe, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, ValidationPipe, Query, Logger } from "@nestjs/common";
 import { CreateEventDTO, GetAllEventsDTO, UpdateEventDTO } from "./dto";
 import { EventService } from "./event.service";
 
 @Controller("event")
 export class EventController {
+
+    // private readonly logger = new Logger();
 
     constructor(private eventService:EventService) {}
 
@@ -11,6 +13,7 @@ export class EventController {
     
     @Get("all")
     async getAllEvents(@Query(new ValidationPipe({whitelist:true,transform:true})) query:GetAllEventsDTO) {
+        // this.logger.debug("Reached") 
         return await this.eventService.getAllEvents(query);
     }
 
