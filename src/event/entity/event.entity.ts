@@ -1,4 +1,5 @@
-import {PrimaryGeneratedColumn, Entity, Column} from "typeorm"
+import { AttendeeEntity } from "src/attendee/entity/attendee.entity";
+import {PrimaryGeneratedColumn, Entity, Column, OneToMany} from "typeorm"
 
 @Entity("events")
 export class EventEntity {
@@ -19,6 +20,8 @@ export class EventEntity {
     address:string;
 
     @Column({type:"datetime", default: () => "CURRENT_TIMESTAMP"})
-    createdAt:Date
+    createdAt:Date;
 
+    @OneToMany(() => AttendeeEntity, (attendee) => attendee.event, {eager:true}) // If eager is set to true, then while performing find operations on event entity using ORM we will be seeing the attendess list along the result. We can explicitly change this behaviour on the find method
+    attendees: AttendeeEntity[];
 }

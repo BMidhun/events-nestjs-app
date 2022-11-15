@@ -14,7 +14,7 @@ export class EventService{
 
     }
 
-    async getAllEvents(query:GetAllEventsDTO):Promise<IEvent[]> {
+    async getAllEvents(query:GetAllEventsDTO):Promise<EventEntity[]> {
        
         const {limit,skip,search,orderBy} = query
         
@@ -23,25 +23,27 @@ export class EventService{
         return events;
     }
 
-    async getEvent(id:number):Promise<IEvent> {
-        const event = await this.eventRepository.findOneBy({id})
+    async getEvent(id:number):Promise<EventEntity> {
+        // const event = await this.eventRepository.findOne({where:{id}, loadEagerRelations:false}) // loadEagerRelations prevents the attendees entity appearing in the result of the select query.
+        const event = await this.eventRepository.findOne({where:{id}, relations:["attendees"]});  // we can specify the entiities we want to project in our select query result using relations options array. Pass the enitities name in the array.
+        // const event = await this.eventRepository.findOne({where:{id}});
         if(!event)
             throw new NotFoundException("Invalid id")
         return event;
     }
 
-    async createEvent(payload:CreateEventDTO):Promise<IEvent>  {
+    async createEvent(payload:CreateEventDTO):Promise<EventEntity>  {
         return await this.eventRepository.save({...payload});
     }
 
-    async updateEvent(id:number, payload:UpdateEventDTO):Promise<IEvent>  {
+    async updateEvent(id:number, payload:UpdateEventDTO):Promise<EventEntity>  {
         const event = await this.getEvent(id);
         return await this.eventRepository.save({...event,...payload});
     }
 
-    async deleteEvent(id:number):Promise<IEvent> {
+    async deleteEvent(id:number):Promise<EventEntity> {
         const event = await this.getEvent(id);
-        await this.eventRepository.delete(event);
+        await this.eventRepository.remove(event);
         return event;
     }
 
