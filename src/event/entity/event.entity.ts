@@ -24,4 +24,9 @@ export class EventEntity {
 
     @OneToMany(() => AttendeeEntity, (attendee) => attendee.event, {eager:true}) // If eager is set to true, then while performing find operations on event entity using ORM we will be seeing the attendess list along the result. We can explicitly change this behaviour on the find method
     attendees: AttendeeEntity[];
+
+    attendeesCount?:number; // This will be a virtual property in the Entity and will not be visible/saved in the DB.
+    attendeesAcceptedCount?:number;
+    attendeesMayBeCount?:number;
+    attendeesRejectedCount?:number;
 }
