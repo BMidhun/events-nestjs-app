@@ -1,8 +1,8 @@
 import { NotFoundException, Injectable } from "@nestjs/common";
-import {Repository, ILike,} from "typeorm"
+import {Repository, ILike, SelectQueryBuilder,} from "typeorm"
 import {InjectRepository} from "@nestjs/typeorm"
 import { EventEntity } from "./entity";
-import { CreateEventDTO, GetAllEventsDTO, UpdateEventDTO } from "./dto";
+import { CreateEventDTO, GetAllEventsDTO, UpdateEventDTO, WhenFilterEnum } from "./dto";
 import { AttendeeAnswerEnum } from "src/attendee/entity/attendee.entity";
 @Injectable()
 export class EventService{
@@ -13,12 +13,44 @@ export class EventService{
     ) {
 
     }
+
+    private getAllEventsBaseQuery ({skip,orderBy}) {
+        return this.eventRepository.createQueryBuilder("e")
+        .orderBy("e.createdAt",orderBy)
+        .skip(skip)
+    }
     
+    private getEventsOnWhenFilterCondition(type:WhenFilterEnum, query:GetAllEventsDTO) {
+        const condition = {
+            [WhenFilterEnum.TODAY] : "e.when >= CURDATE() AND e.when < CURDATE() + INTERVAL 1 DAY",
+            [WhenFilterEnum.TOMORROW] : "e.when >= CURDATE() + INTERVAL 1 DAY AND e.when < CURDATE() + INTERVAL 2 DAY",
+            [WhenFilterEnum.THIS_WEEK] : "YEARWEEK(e.when, 1) = YEARWEEK(CURDATE(), 1)",
+            [WhenFilterEnum.NEXT_WEEK] : "e.when >= CURDATE() + INTERVAL 7 DAY AND  e.when <= CURDATE() + INTERVAL 14 DAY",
+            [WhenFilterEnum.NEXT_MONTH] : "YEAR(e.when) = YEAR(CURDATE()) AND MONTH(e.when) = MONTH(CURDATE())"
+        }
+
+        console.log("Reached", condition[type])
+
+        
+        return this.getAllEventsBaseQuery(query).where(condition[type] + "\t" + " AND (e.name LIKE :value OR e.description LIKE :value)", {value:`%${query.search}%`});
+    }
 
     async getAllEvents(query:GetAllEventsDTO):Promise<EventEntity[]> {
        
-        const {limit,skip,search,orderBy} = query
+        const {limit,skip,search,orderBy, whenFilter} = query;
+
+        let res: SelectQueryBuilder<EventEntity>;
+
+        if(!whenFilter)
+            res = this.getAllEventsBaseQuery(query).where("e.name LIKE :value OR e.description LIKE :value",{value:`%${search}%`})
+            .limit(limit);
+
+        else
+            res = this.getEventsOnWhenFilterCondition(whenFilter,query);
+    
         
+        console.log(await res.limit(limit).getMany());
+
         const events = await this.eventRepository.find({take:limit, skip, order:{createdAt:orderBy}, where:[{name:ILike(`%${search}%`)}, {description:ILike(`%${search}%`)}] });
 
         return events;

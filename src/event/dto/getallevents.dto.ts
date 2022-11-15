@@ -1,11 +1,17 @@
-import {IsOptional, IsInt, IsString,IsIn} from "class-validator";
-import {Transform, Type} from "class-transformer";
+import {IsOptional, IsInt, IsString,IsIn, IsEnum} from "class-validator";
+import {Type} from "class-transformer";
 
-type ORDERBY_TYPE = "asc"| "desc"| "ASC" | "DESC";
+type ORDERBY_TYPE = "ASC" | "DESC";
 
-const ORDERBY_ALLOWED_VALUES:ORDERBY_TYPE[] = ["asc","desc","ASC","DESC"];
+const ORDERBY_ALLOWED_VALUES:ORDERBY_TYPE[] = ["ASC","DESC"];
 
-
+export enum WhenFilterEnum {
+    TODAY = 1,
+    TOMORROW,
+    THIS_WEEK,
+    NEXT_WEEK,
+    NEXT_MONTH
+}
 
 
 export class GetAllEventsDTO {
@@ -28,4 +34,9 @@ export class GetAllEventsDTO {
     @IsOptional()
     @IsIn(ORDERBY_ALLOWED_VALUES)
     orderBy:ORDERBY_TYPE = ORDERBY_ALLOWED_VALUES[0];
+
+    @IsOptional()
+    @Type(() => Number)
+    @IsEnum(WhenFilterEnum)
+    whenFilter: WhenFilterEnum | undefined
 }
