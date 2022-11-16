@@ -2,6 +2,7 @@ import {registerAs} from "@nestjs/config"
 import { TypeOrmModuleOptions } from "@nestjs/typeorm"
 import { AttendeeEntity } from "src/attendee/entity/attendee.entity"
 import { EventEntity } from "src/event/entity"
+import { UserEntity } from "src/user/entity"
 
 export default registerAs("DB_DEV_CONFIG", ():TypeOrmModuleOptions => {
     return {
@@ -10,7 +11,7 @@ export default registerAs("DB_DEV_CONFIG", ():TypeOrmModuleOptions => {
         username:process.env.DB_USER,
         password:process.env.DB_PASSWORD,
         database:process.env.DB_NAME,
-        entities:[EventEntity, AttendeeEntity],
+        entities:[EventEntity, AttendeeEntity, UserEntity],
         synchronize:true,
         type:"mysql",
     }
