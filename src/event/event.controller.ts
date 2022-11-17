@@ -4,6 +4,7 @@ import { UserEntity } from "src/user/entity";
 import { JwtAuthGuard } from "src/user/guards/jwt-auth.guard";
 import { CreateEventDTO, GetAllEventsDTO, UpdateEventDTO } from "./dto";
 import { EventService } from "./event.service";
+import { OwnEventGuard } from "./guards";
 
 @Controller("event")
 export class EventController {
@@ -31,11 +32,13 @@ export class EventController {
         return await this.eventService.createEvent(payload,user);
     }
 
+    @UseGuards(JwtAuthGuard, OwnEventGuard)
     @Patch(":id")
     async updateEvent(@Param("id", ParseIntPipe) id:number, @Body(new ValidationPipe({whitelist:true,transform:true})) payload: UpdateEventDTO) {
         return await this.eventService.updateEvent(id,payload);
     }
 
+    @UseGuards(JwtAuthGuard, OwnEventGuard)
     @Delete(":id")
     async deleteEvent(@Param("id", ParseIntPipe) id:number) {
         return await this.eventService.deleteEvent(id);
