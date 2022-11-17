@@ -1,4 +1,7 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, ValidationPipe, Query, Logger } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, ValidationPipe, Query, Logger, UseGuards } from "@nestjs/common";
+import { CurrentUser } from "src/user/current-user.decorator";
+import { UserEntity } from "src/user/entity";
+import { JwtAuthGuard } from "src/user/guards/jwt-auth.guard";
 import { CreateEventDTO, GetAllEventsDTO, UpdateEventDTO } from "./dto";
 import { EventService } from "./event.service";
 
@@ -22,9 +25,10 @@ export class EventController {
         return await this.eventService.getEvent(id);
     }
 
+    @UseGuards(JwtAuthGuard)
     @Post()
-    async createEvent(@Body(new ValidationPipe({whitelist:true,transform:true})) payload:CreateEventDTO) {
-        return await this.eventService.createEvent(payload);
+    async createEvent(@Body(new ValidationPipe({whitelist:true,transform:true})) payload:CreateEventDTO, @CurrentUser() user: UserEntity) {
+        return await this.eventService.createEvent(payload,user);
     }
 
     @Patch(":id")

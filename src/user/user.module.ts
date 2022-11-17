@@ -7,6 +7,7 @@ import { UserEntity } from "./entity";
 import { UserController } from "./user.controller";
 import { UserService } from "./user.service";
 import { JwtStrategy, LocalStrategy } from "./strategy";
+import { LocalAuthGuard, JwtAuthGuard } from "./guards";
 
 @Module({
     imports:[
@@ -17,7 +18,7 @@ import { JwtStrategy, LocalStrategy } from "./strategy";
         })
     ],
     controllers:[UserController],
-    providers:[UserService,LocalStrategy, JwtStrategy]
+    providers:[UserService,LocalStrategy, JwtStrategy, JwtAuthGuard, LocalAuthGuard],
 })
 
 export class UserModule {

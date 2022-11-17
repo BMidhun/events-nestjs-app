@@ -1,4 +1,5 @@
-import {Entity, PrimaryGeneratedColumn,Column} from "typeorm";
+import { EventEntity } from "src/event/entity";
+import {Entity, PrimaryGeneratedColumn,Column, OneToMany} from "typeorm";
 
 @Entity("user")
 export class UserEntity {
@@ -17,5 +18,8 @@ export class UserEntity {
 
     @Column()
     lastName : string;
+
+    @OneToMany(() => EventEntity, (event) => event.organizer)
+    events: EventEntity[]
 
 }

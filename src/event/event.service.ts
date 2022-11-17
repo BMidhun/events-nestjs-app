@@ -4,6 +4,7 @@ import {InjectRepository} from "@nestjs/typeorm"
 import { EventEntity } from "./entity";
 import { CreateEventDTO, GetAllEventsDTO, UpdateEventDTO, WhenFilterEnum } from "./dto";
 import { AttendeeAnswerEnum } from "src/attendee/entity/attendee.entity";
+import { UserEntity } from "src/user/entity";
 @Injectable()
 export class EventService{
 
@@ -92,8 +93,8 @@ export class EventService{
         // return event;
     }
 
-    async createEvent(payload:CreateEventDTO):Promise<EventEntity>  {
-        return await this.eventRepository.save({...payload});
+    async createEvent(payload:CreateEventDTO, user:UserEntity):Promise<EventEntity>  {
+        return await this.eventRepository.save({...payload,organizer:user});
     }
 
     async updateEvent(id:number, payload:UpdateEventDTO):Promise<EventEntity>  {
