@@ -1,4 +1,4 @@
-import { AttendeeEntity } from "src/attendee/entity/attendee.entity";
+import { AttendeeEntity } from "src/event/entity/attendee.entity";
 import { UserEntity } from "src/user/entity";
 import {PrimaryGeneratedColumn, Entity, Column, OneToMany, ManyToOne, JoinColumn} from "typeorm"
 import {Expose} from "class-transformer"

@@ -1,7 +1,7 @@
 import { EventEntity } from "src/event/entity";
 import {Entity, PrimaryGeneratedColumn,Column, OneToMany} from "typeorm";
 import {Expose} from "class-transformer"
-import { AttendeeEntity } from "src/attendee/entity/attendee.entity";
+import { AttendeeEntity } from "src/event/entity";
 
 @Entity("user")
 export class UserEntity {

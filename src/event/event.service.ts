@@ -1,9 +1,8 @@
 import { NotFoundException, Injectable } from "@nestjs/common";
 import {Repository, ILike, SelectQueryBuilder, DeleteResult, Not,} from "typeorm"
 import {InjectRepository} from "@nestjs/typeorm"
-import { EventEntity } from "./entity";
+import { EventEntity, AttendeeEntity, AttendeeAnswerEnum } from "./entity";
 import { CreateEventDTO, GetAllEventsDTO, UpdateEventDTO, WhenFilterEnum } from "./dto";
-import { AttendeeAnswerEnum, AttendeeEntity } from "src/attendee/entity/attendee.entity";
 import { UserEntity } from "src/user/entity";
 @Injectable()
 export class EventService{

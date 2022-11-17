@@ -1,7 +1,6 @@
 import {registerAs} from "@nestjs/config"
 import { TypeOrmModuleOptions } from "@nestjs/typeorm"
-import { AttendeeEntity } from "src/attendee/entity/attendee.entity"
-import { EventEntity } from "src/event/entity"
+import { EventEntity, AttendeeEntity } from "src/event/entity"
 import { UserEntity } from "src/user/entity"
 
 export default registerAs("DB_DEV_CONFIG", ():TypeOrmModuleOptions => {
