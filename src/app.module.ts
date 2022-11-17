@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DBModule } from './db/db.module';
 import { EventModule } from './event/event.module';
+import { UserModule } from './user/user.module';
 
 
 @Module({
@@ -10,6 +11,7 @@ import { EventModule } from './event/event.module';
       isGlobal:true,
     }),
     DBModule,
-    EventModule]
+    EventModule,
+    UserModule]
 })
 export class AppModule {}
