@@ -3,14 +3,16 @@ import {Repository, ILike, SelectQueryBuilder, DeleteResult, Not,} from "typeorm
 import {InjectRepository} from "@nestjs/typeorm"
 import { EventEntity } from "./entity";
 import { CreateEventDTO, GetAllEventsDTO, UpdateEventDTO, WhenFilterEnum } from "./dto";
-import { AttendeeAnswerEnum } from "src/attendee/entity/attendee.entity";
+import { AttendeeAnswerEnum, AttendeeEntity } from "src/attendee/entity/attendee.entity";
 import { UserEntity } from "src/user/entity";
 @Injectable()
 export class EventService{
 
     constructor(
         @InjectRepository(EventEntity)
-        private eventRepository: Repository<EventEntity>
+        private eventRepository: Repository<EventEntity>,
+        @InjectRepository(AttendeeEntity)
+        private attendeeRepository: Repository<AttendeeEntity>
     ) {
 
     }
@@ -91,6 +93,19 @@ export class EventService{
         // if(!event)
         //     throw new NotFoundException("Invalid id")
         // return event;
+    }
+
+    async getEventsOrganizedByUser(organizerId:number) {
+        return await this.getAllEventsBaseQuery({skip:0, orderBy:"ASC"})
+        .innerJoinAndSelect("e.organizer","organizer")
+        .where("e.organizerId = :id",{id:organizerId}).getMany();
+    }
+
+    async getEventAttendees(eventId:number) {
+        return await this.attendeeRepository.createQueryBuilder("a")
+                          .innerJoinAndSelect("a.user","user","a.userId = user.id")
+                         .where("a.eventId = :eventId",{eventId})
+                         .getMany();
     }
 
     async createEvent(payload:CreateEventDTO, user:UserEntity):Promise<EventEntity>  {

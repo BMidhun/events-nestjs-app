@@ -29,6 +29,23 @@ export class EventController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Get("/organizer/:organizerId")
+    async getEventsOrganizedByUser(
+        @Param('organizerId') organizerId:number
+    ) { 
+        return await this.eventService.getEventsOrganizedByUser(organizerId);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get(":id/attendees")
+    async getEventAttendees(
+        @Param("id") eventId: number
+    ){
+            return await this.eventService.getEventAttendees(eventId);
+    }
+
+
+    @UseGuards(JwtAuthGuard)
     @Post()
     async createEvent(@Body(new ValidationPipe({whitelist:true,transform:true})) payload:CreateEventDTO, @CurrentUser() user: UserEntity) {
         return await this.eventService.createEvent(payload,user);
