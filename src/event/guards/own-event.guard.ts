@@ -16,7 +16,7 @@ export class OwnEventGuard implements CanActivate {
 
         return this.eventService.getEvent(Number(eventId))
                 .then((event) => {
-                    return event.organizer.id === user.id;
+                    return event.organizerId === user.id;
                 })
                 .catch(() => false)
 

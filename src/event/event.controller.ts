@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, ValidationPipe, Query, Logger, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, ValidationPipe, Query, SerializeOptions, UseGuards, UseInterceptors, ClassSerializerInterceptor } from "@nestjs/common";
 import { CurrentUser } from "src/user/current-user.decorator";
 import { UserEntity } from "src/user/entity";
 import { JwtAuthGuard } from "src/user/guards/jwt-auth.guard";
@@ -7,6 +7,8 @@ import { EventService } from "./event.service";
 import { OwnEventGuard } from "./guards";
 
 @Controller("event")
+@SerializeOptions({strategy:"excludeAll"}) // This decorator will prevent all the data in the resulting json of each API from being exposed.
+@UseInterceptors(ClassSerializerInterceptor)
 export class EventController {
 
     // private readonly logger = new Logger();

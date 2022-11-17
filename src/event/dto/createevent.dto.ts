@@ -1,4 +1,4 @@
-import {Type} from "class-transformer";
+import {Type, Expose} from "class-transformer";
 import {IsNotEmpty, IsString,IsDate} from "class-validator";
 
 export class CreateEventDTO {

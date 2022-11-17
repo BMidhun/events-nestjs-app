@@ -94,12 +94,27 @@ export class EventService{
     }
 
     async createEvent(payload:CreateEventDTO, user:UserEntity):Promise<EventEntity>  {
-        return await this.eventRepository.save({...payload,organizer:user});
+         const event = new EventEntity();
+
+         event.name = payload.name;
+         event.description = payload.description;
+         event.when = payload.when;
+         event.address = payload.address;
+         event.organizer = user;
+
+         return await this.eventRepository.save(event);
     }
 
     async updateEvent(id:number, payload:UpdateEventDTO):Promise<EventEntity>  {
         const event = await this.getEvent(id);
-        return await this.eventRepository.save({...event,...payload});
+
+        event.name = payload.name ? payload.name : event.name;
+        event.description = payload.description ? payload.description : event.description;
+        event.when = payload.when ? payload.when : event.when;
+        event.address = payload.address ? payload.address : event.address;
+
+        const res = await this.eventRepository.save(event);
+        return res;
     }
 
     async deleteEvent(id:number):Promise<DeleteResult> {

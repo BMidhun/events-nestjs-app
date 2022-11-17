@@ -44,7 +44,6 @@ export class UserService {
 
     async getUserById(id:number) {
         const user = await this.userRepository.createQueryBuilder("e").where("e.id =:id", {id}).getOne()
-        delete user.password;
         return user;
     }
 
