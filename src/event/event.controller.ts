@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, ValidationPipe, Query, SerializeOptions, UseGuards, UseInterceptors, ClassSerializerInterceptor } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, ValidationPipe, Query, SerializeOptions, UseGuards, UseInterceptors, ClassSerializerInterceptor, HttpCode } from "@nestjs/common";
 import { CurrentUser } from "src/user/current-user.decorator";
 import { UserEntity } from "src/user/entity";
 import { JwtAuthGuard } from "src/user/guards/jwt-auth.guard";
@@ -42,6 +42,7 @@ export class EventController {
 
     @UseGuards(JwtAuthGuard, OwnEventGuard)
     @Delete(":id")
+    @HttpCode(204)
     async deleteEvent(@Param("id", ParseIntPipe) id:number) {
         return await this.eventService.deleteEvent(id);
     }
