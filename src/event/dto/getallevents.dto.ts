@@ -1,9 +1,10 @@
 import {IsOptional, IsInt, IsString,IsIn, IsEnum} from "class-validator";
 import {Type} from "class-transformer";
 
-type ORDERBY_TYPE = "ASC" | "DESC";
-
-const ORDERBY_ALLOWED_VALUES:ORDERBY_TYPE[] = ["ASC","DESC"];
+enum ORDERBY_ENUM {
+    ASC = "ASC",
+    DESC = "DESC"
+}
 
 export enum WhenFilterEnum {
     TODAY = 1,
@@ -32,8 +33,8 @@ export class GetAllEventsDTO {
     search:string = "";
     
     @IsOptional()
-    @IsIn(ORDERBY_ALLOWED_VALUES)
-    orderBy:ORDERBY_TYPE = ORDERBY_ALLOWED_VALUES[0];
+    @IsEnum(ORDERBY_ENUM)
+    orderBy:ORDERBY_ENUM = ORDERBY_ENUM.ASC;
 
     @IsOptional()
     @Type(() => Number)

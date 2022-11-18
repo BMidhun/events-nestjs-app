@@ -1,4 +1,4 @@
-import {CanActivate, ExecutionContext, Injectable} from "@nestjs/common";
+import {CanActivate, ExecutionContext, Injectable, NotFoundException} from "@nestjs/common";
 import { Observable } from "rxjs";
 import { EventService } from "../event.service";
 
@@ -16,9 +16,13 @@ export class OwnEventGuard implements CanActivate {
 
         return this.eventService.getEvent(Number(eventId))
                 .then((event) => {
+                    if(!event)
+                        throw new NotFoundException("Event not found")
                     return event.organizerId === user.id;
                 })
-                .catch(() => false)
+                .catch((err) => {
+                    throw err;
+                })
 
 
     }

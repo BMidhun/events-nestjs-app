@@ -6,6 +6,10 @@ import {Expose} from "class-transformer"
 @Entity("events")
 export class EventEntity {
 
+    constructor(partial?: Partial<EventEntity>) {
+        Object.assign(this,partial);
+    }
+
     @PrimaryGeneratedColumn({type:"int"})
     @Expose() // This decorator will expose the attribute in the resulting json response of the API it includes.
     id:number;

@@ -23,15 +23,21 @@ export class EventController {
         return await this.eventService.getAllEvents(query);
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Get("attended-by-user")
+    async getEventsAttendedByUser(@CurrentUser() user:UserEntity) {
+        return await this.eventService.getEventsAttendedByUserId(user.id);
+    }
+
     @Get(":id")
     async getEventById (@Param("id", ParseIntPipe) id:number) {
         return await this.eventService.getEvent(id);
     }
 
     @UseGuards(JwtAuthGuard)
-    @Get("/organizer/:organizerId")
+    @Get("organizer/:organizerId")
     async getEventsOrganizedByUser(
-        @Param('organizerId') organizerId:number
+        @Param('organizerId', ParseIntPipe) organizerId:number
     ) { 
         return await this.eventService.getEventsOrganizedByUser(organizerId);
     }
@@ -44,11 +50,6 @@ export class EventController {
             return await this.eventService.getEventAttendees(eventId);
     }
 
-    @UseGuards(JwtAuthGuard)
-    @Get("attended-by-user")
-    async getEventsAttendedByUser(@CurrentUser() user:UserEntity) {
-        return await this.eventService.getEventsAttendedByUserId(user.id);
-    }
 
     @UseGuards(JwtAuthGuard)
     @Get(":id/attended-by-user")
@@ -58,6 +59,8 @@ export class EventController {
         ) {
         return await this.eventService.getEventAttendedByUserId(id,user.id);
     }
+
+  
 
 
     @UseGuards(JwtAuthGuard)

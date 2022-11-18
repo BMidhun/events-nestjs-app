@@ -57,10 +57,10 @@ export class UserService {
         
         const hashedPassword = await argonHash(password,{saltLength:12});
 
-        const savedUser = await this.userRepository.save({
+        const savedUser = await this.userRepository.save(new UserEntity({
             ...payload,
             password:hashedPassword
-        });
+        }));
 
         const access_token = this.createToken({sub:savedUser.id, username:savedUser.email});
 

@@ -6,6 +6,10 @@ import { AttendeeEntity } from "src/event/entity";
 @Entity("user")
 export class UserEntity {
 
+    constructor(partial?: Partial<UserEntity>) {
+        Object.assign(this,partial);
+    }
+
     @PrimaryGeneratedColumn()
     @Expose()
     id:number;
@@ -25,10 +29,10 @@ export class UserEntity {
     @Expose()
     lastName : string;
 
-    @OneToMany(() => EventEntity, (event) => event.organizer)
+    @OneToMany(() => EventEntity, (event) => event.organizer, {onDelete:"CASCADE"})
     events: EventEntity[]
 
-    @OneToMany(() => AttendeeEntity, (attendee) => attendee.userId)
+    @OneToMany(() => AttendeeEntity, (attendee) => attendee.userId,{onDelete:"CASCADE"})
     attended:AttendeeEntity[]
 
 }

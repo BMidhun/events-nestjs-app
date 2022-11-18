@@ -19,7 +19,7 @@ export class EventService{
     private getAllEventsBaseQuery ({skip,orderBy}) {
         return this.eventRepository.createQueryBuilder("e")
         .orderBy("e.createdAt",orderBy)
-        .skip(skip)
+        .offset(skip)
     }
 
     private getAttendeesCountBaseQuery<EventEntity>(query:SelectQueryBuilder<EventEntity> ): SelectQueryBuilder<EventEntity>{
@@ -39,7 +39,6 @@ export class EventService{
             [WhenFilterEnum.NEXT_MONTH] : "YEAR(e.when) = YEAR(CURDATE()) AND MONTH(e.when) = MONTH(CURDATE())"
         }
 
-        console.log("Reached", condition[type])
 
         
         return this.getAllEventsBaseQuery(query).where(condition[type] + "\t" + " AND (e.name LIKE :value OR e.description LIKE :value)", {value:`%${query.search}%`});
@@ -82,8 +81,9 @@ export class EventService{
 
         const event = await this.getAttendeesCountBaseQuery(res).getOne();
 
+
          if(!event)
-            throw new NotFoundException("Invalid id")
+            throw new NotFoundException("Event not found")
         return event;
         
         // const event = await this.eventRepository.findOne({where:{id}, relations:["attendees"]});  // we can specify the entiities we want to project in our select query result using relations options array. Pass the enitities name in the array.
@@ -95,7 +95,7 @@ export class EventService{
     }
 
     async getEventsOrganizedByUser(organizerId:number) {
-        return await this.getAllEventsBaseQuery({skip:0, orderBy:"ASC"})
+        return await this.getAttendeesCountBaseQuery(this.getAllEventsBaseQuery({skip:0, orderBy:"ASC"}))
         .innerJoinAndSelect("e.organizer","organizer")
         .where("e.organizerId = :id",{id:organizerId}).getMany();
     }
@@ -118,31 +118,22 @@ export class EventService{
     async getEventAttendedByUserId(eventId:number, userId:number) {
         return await this.getAllEventsBaseQuery({skip:0, orderBy:"DESC"})
                         .innerJoinAndSelect("e.attendees","attendees",`e.id = ${eventId}`)
+                        .select("e.attendees.")
                         .where("attendees.userId = :userId",{userId})
                         .getOne();
     }  
 
     async createEvent(payload:CreateEventDTO, user:UserEntity):Promise<EventEntity>  {
-         const event = new EventEntity();
-
-         event.name = payload.name;
-         event.description = payload.description;
-         event.when = payload.when;
-         event.address = payload.address;
-         event.organizer = user;
-
+         const event = new EventEntity({...payload,organizer:user});
          return await this.eventRepository.save(event);
     }
 
     async updateEvent(id:number, payload:UpdateEventDTO):Promise<EventEntity>  {
         const event = await this.getEvent(id);
 
-        event.name = payload.name ? payload.name : event.name;
-        event.description = payload.description ? payload.description : event.description;
-        event.when = payload.when ? payload.when : event.when;
-        event.address = payload.address ? payload.address : event.address;
+        const updatedEvent = new EventEntity({...event, ...payload})
 
-        const res = await this.eventRepository.save(event);
+        const res = await this.eventRepository.save(updatedEvent);
         return res;
     }
 
