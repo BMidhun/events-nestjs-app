@@ -1,8 +1,8 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, ValidationPipe, Query, SerializeOptions, UseGuards, UseInterceptors, ClassSerializerInterceptor, HttpCode } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, ValidationPipe, Query, SerializeOptions, UseGuards, UseInterceptors, ClassSerializerInterceptor, HttpCode, Put } from "@nestjs/common";
 import { CurrentUser } from "src/user/current-user.decorator";
 import { UserEntity } from "src/user/entity";
 import { JwtAuthGuard } from "src/user/guards/jwt-auth.guard";
-import { CreateEventDTO, GetAllEventsDTO, UpdateEventDTO } from "./dto";
+import { AttendeeStatusDTO, CreateEventDTO, GetAllEventsDTO, UpdateEventDTO } from "./dto";
 import { EventService } from "./event.service";
 import { OwnEventGuard } from "./guards";
 
@@ -39,9 +39,24 @@ export class EventController {
     @UseGuards(JwtAuthGuard)
     @Get(":id/attendees")
     async getEventAttendees(
-        @Param("id") eventId: number
+        @Param("id", ParseIntPipe) eventId: number
     ){
             return await this.eventService.getEventAttendees(eventId);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get("attended-by-user")
+    async getEventsAttendedByUser(@CurrentUser() user:UserEntity) {
+        return await this.eventService.getEventsAttendedByUserId(user.id);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Get(":id/attended-by-user")
+    async getEventAttendedByUser(
+        @Param("id", ParseIntPipe) id: number, 
+        @CurrentUser() user:UserEntity
+        ) {
+        return await this.eventService.getEventAttendedByUserId(id,user.id);
     }
 
 
@@ -49,6 +64,16 @@ export class EventController {
     @Post()
     async createEvent(@Body(new ValidationPipe({whitelist:true,transform:true})) payload:CreateEventDTO, @CurrentUser() user: UserEntity) {
         return await this.eventService.createEvent(payload,user);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Put(":id/attendee-create-update")
+    async createOrUpdateAttendee(
+        @Body(new ValidationPipe({whitelist:true})) userInput: AttendeeStatusDTO,
+        @Param("id", ParseIntPipe) id: number,
+        @CurrentUser() user: UserEntity
+    ) {
+        return await this.eventService.createOrUpdateAttendee(userInput.answer,id,user.id)
     }
 
     @UseGuards(JwtAuthGuard, OwnEventGuard)

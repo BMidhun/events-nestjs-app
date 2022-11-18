@@ -1,5 +1,5 @@
 import { NotFoundException, Injectable } from "@nestjs/common";
-import {Repository, ILike, SelectQueryBuilder, DeleteResult, Not,} from "typeorm"
+import {Repository, SelectQueryBuilder, DeleteResult} from "typeorm"
 import {InjectRepository} from "@nestjs/typeorm"
 import { EventEntity, AttendeeEntity, AttendeeAnswerEnum } from "./entity";
 import { CreateEventDTO, GetAllEventsDTO, UpdateEventDTO, WhenFilterEnum } from "./dto";
@@ -107,6 +107,21 @@ export class EventService{
                          .getMany();
     }
 
+
+    async getEventsAttendedByUserId(userId:number) {
+        return await this.getAllEventsBaseQuery({skip:0,orderBy:"DESC"})
+                        .innerJoinAndSelect("e.attendees","attendees","e.id = attendees.eventId")
+                        .where("attendees.userId = :userId",{userId})
+                        .getMany();
+    } 
+
+    async getEventAttendedByUserId(eventId:number, userId:number) {
+        return await this.getAllEventsBaseQuery({skip:0, orderBy:"DESC"})
+                        .innerJoinAndSelect("e.attendees","attendees",`e.id = ${eventId}`)
+                        .where("attendees.userId = :userId",{userId})
+                        .getOne();
+    }  
+
     async createEvent(payload:CreateEventDTO, user:UserEntity):Promise<EventEntity>  {
          const event = new EventEntity();
 
@@ -145,6 +160,19 @@ export class EventService{
 
         return res;
 
+    }
+
+
+    async createOrUpdateAttendee (userInput:AttendeeAnswerEnum ,eventId:number, userId:number){
+        const attendeeEntry = await this.attendeeRepository.findOne({where:{eventId, userId}});
+    
+        let record = attendeeEntry ? attendeeEntry : new AttendeeEntity();
+
+        record.answer = userInput;
+        record.eventId = eventId;
+        record.userId = userId;
+    
+        return this.attendeeRepository.save(record);
     }
 
 }
